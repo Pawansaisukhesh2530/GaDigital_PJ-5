@@ -13,6 +13,7 @@
     initConsultationModal();
     initFaqAccordion();
     initTabs();
+    initContactForm();
     initHeaderScroll();
     initScrollToTop();
     initRevealOnScroll();
@@ -434,5 +435,137 @@
     }, { rootMargin: '0px 0px -40px 0px', threshold: 0.08 });
 
     els.forEach(function (el) { observer.observe(el); });
+  }
+
+  /* --------------------------------------------------------- Contact form
+     No server-side handler exists on this site, so the form composes the
+     enquiry and hands it to the visitor's own WhatsApp or email client.
+     Nothing is transmitted to or stored by this website.                   */
+  function initContactForm() {
+
+    var form = document.getElementById('contactForm');
+    if (!form) return;
+
+    var status = document.getElementById('contactStatus');
+    var WHATSAPP_NUMBER = '919346867764';
+    var EMAIL_TO = 'mybrain2spine@gmail.com';
+
+    var fields = [
+      { input: 'cName',    error: 'cNameErr',    required: true },
+      { input: 'cPhone',   error: 'cPhoneErr',   required: true },
+      { input: 'cEmail',   error: 'cEmailErr',   required: false, email: true },
+      { input: 'cMessage', error: 'cMessageErr', required: true }
+    ];
+
+    function val(id) {
+      var el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    }
+
+    function setFieldError(field, invalid) {
+      var input = document.getElementById(field.input);
+      var error = document.getElementById(field.error);
+      if (!input) return;
+      if (invalid) {
+        input.setAttribute('aria-invalid', 'true');
+        if (error) error.hidden = false;
+      } else {
+        input.removeAttribute('aria-invalid');
+        if (error) error.hidden = true;
+      }
+    }
+
+    function checkField(field) {
+      var value = val(field.input);
+      var invalid = false;
+      if (field.required && !value) invalid = true;
+      if (!invalid && field.email && value && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) invalid = true;
+      setFieldError(field, invalid);
+      return !invalid;
+    }
+
+    function setStatus(message, state) {
+      if (!status) return;
+      status.textContent = message;
+      if (state) { status.setAttribute('data-state', state); }
+      else { status.removeAttribute('data-state'); }
+    }
+
+    /* Clear the error as soon as the visitor starts correcting the field */
+    fields.forEach(function (field) {
+      var input = document.getElementById(field.input);
+      if (!input) return;
+      input.addEventListener('input', function () {
+        if (input.getAttribute('aria-invalid') === 'true') checkField(field);
+      });
+      input.addEventListener('blur', function () {
+        if (val(field.input)) checkField(field);
+      });
+    });
+
+    function validate() {
+      var firstInvalid = null;
+      fields.forEach(function (field) {
+        if (!checkField(field) && !firstInvalid) firstInvalid = document.getElementById(field.input);
+      });
+      if (firstInvalid) {
+        setStatus('Please complete the highlighted fields.', 'error');
+        firstInvalid.focus();
+        return false;
+      }
+      return true;
+    }
+
+    function buildLines() {
+      var lines = [];
+      lines.push('Website enquiry - braintospine.com');
+      lines.push('');
+      lines.push('Name: ' + val('cName'));
+      lines.push('Phone: ' + val('cPhone'));
+      if (val('cEmail')) lines.push('Email: ' + val('cEmail'));
+      if (val('cTopic')) lines.push('Reason: ' + val('cTopic'));
+      lines.push('');
+      lines.push('Message:');
+      lines.push(val('cMessage'));
+      return lines;
+    }
+
+    function send(channel) {
+      if (!validate()) return;
+
+      var body = buildLines().join('\n');
+      var subject = 'Website enquiry from ' + val('cName');
+      var url;
+
+      if (channel === 'whatsapp') {
+        url = 'https://api.whatsapp.com/send?phone=' + WHATSAPP_NUMBER +
+              '&text=' + encodeURIComponent(body);
+        setStatus('Opening WhatsApp with your message. Press send there to deliver it.', 'ok');
+      } else {
+        url = 'mailto:' + EMAIL_TO +
+              '?subject=' + encodeURIComponent(subject) +
+              '&body=' + encodeURIComponent(body);
+        setStatus('Opening your email app with your message. Press send there to deliver it.', 'ok');
+      }
+
+      if (channel === 'whatsapp') {
+        window.open(url, '_blank', 'noopener');
+      } else {
+        window.location.href = url;
+      }
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      send('whatsapp');
+    });
+
+    form.querySelectorAll('[data-send]').forEach(function (btn) {
+      if (btn.type === 'submit') return;
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        send(btn.getAttribute('data-send'));
+      });
+    });
   }
 })();

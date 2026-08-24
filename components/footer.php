@@ -16,7 +16,7 @@ $u = function ($p) use ($rootPath) { return $rootPath . $p; };
 
       <!-- About -->
       <div class="footer-col footer-brand">
-        <img src="<?php echo $u('images/logo.png'); ?>" alt="Brain to Spine" class="footer-logo" width="160" height="36">
+        <img src="<?php echo $u('images/logo.png'); ?>" alt="Brain to Spine" class="footer-logo" width="120" height="80">
         <h2 class="footer-heading">About</h2>
         <p class="footer-desc">'Brain to Spine' is an online platform structured by Dr. Ajay Reddy for educating and communicating with patients on various neuro surgical procedures. He is currently practicing at 'Star Hospitals', Nanakramguda, Hyderabad as a 'Senior Consultant, Neurosurgery'.</p>
         <ul class="footer-contact-list">
@@ -47,15 +47,23 @@ $u = function ($p) use ($rootPath) { return $rootPath . $p; };
       <div class="footer-col">
         <h2 class="footer-heading">Address</h2>
         <div class="footer-address">
-          <p class="footer-address-label">Location 1: <a href="https://www.google.com/maps?q=Survey%20No.74,%20Financial%20District,%20Nanakramguda,%20Hyderabad,%20Telangana%20500008" target="_blank" rel="noopener">Click here to view location</a></p>
-          <p>Star Hospitals &ndash; Survey No.74, Financial District, Nanakramguda, Hyderabad, Telangana 500008</p>
 
-          <p class="footer-address-label">Location 2: <a href="https://www.google.com/maps?q=8-2-596/5,%20Road%20No.%2010,%20Gaffar%20Khan%20Colony,%20Banjara%20Hills,%20Hyderabad,%20Telangana%20500034" target="_blank" rel="noopener">Click here to view location</a></p>
-          <p>Star Hospitals &ndash; 8-2-596/5, Road No. 10, Gaffar Khan Colony, Banjara Hills, Hyderabad, Telangana 500034</p>
+          <div class="footer-address-item">
+            <p class="footer-address-label">Location 1: <a href="https://www.google.com/maps?q=Survey%20No.74,%20Financial%20District,%20Nanakramguda,%20Hyderabad,%20Telangana%20500008" target="_blank" rel="noopener" aria-label="View Star Hospitals Nanakramguda on Google Maps">Click here to view location</a></p>
+            <p>Star Hospitals &ndash; Survey No.74, Financial District, Nanakramguda, Hyderabad, Telangana 500008</p>
+          </div>
 
-          <p class="footer-address-label">Clear Skin Clinic</p>
-          <p>Location 1: 1-98/5/4/154 Pathrikanagar, Medicover Hospital Lane, Opp. Cyber Gate Madhapur, Hitec City, Hyderabad &ndash; 500081</p>
-          <p>Location 2: New Branch Coming Soon in Kukatpally</p>
+          <div class="footer-address-item">
+            <p class="footer-address-label">Location 2: <a href="https://www.google.com/maps?q=8-2-596/5,%20Road%20No.%2010,%20Gaffar%20Khan%20Colony,%20Banjara%20Hills,%20Hyderabad,%20Telangana%20500034" target="_blank" rel="noopener" aria-label="View Star Hospitals Banjara Hills on Google Maps">Click here to view location</a></p>
+            <p>Star Hospitals &ndash; 8-2-596/5, Road No. 10, Gaffar Khan Colony, Banjara Hills, Hyderabad, Telangana 500034</p>
+          </div>
+
+          <div class="footer-address-item">
+            <p class="footer-address-label">Clear Skin Clinic</p>
+            <p>Location 1: 1-98/5/4/154 Pathrikanagar, Medicover Hospital Lane, Opp. Cyber Gate Madhapur, Hitec City, Hyderabad &ndash; 500081</p>
+            <p>Location 2: New Branch Coming Soon in Kukatpally</p>
+          </div>
+
         </div>
       </div>
 

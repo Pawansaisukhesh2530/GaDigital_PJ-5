@@ -10,7 +10,7 @@ $u = function ($p) use ($rootPath) { return $rootPath . $p; };
 <header class="main-header" id="mainHeader">
   <div class="container header-wrapper">
     <a href="<?php echo $u('index.php'); ?>" class="logo-link" aria-label="Brain to Spine — home">
-      <img src="<?php echo $u('images/logo.png'); ?>" alt="Brain to Spine" class="logo-img" width="160" height="40">
+      <img src="<?php echo $u('images/logo.png'); ?>" alt="Brain to Spine" class="logo-img" width="120" height="80">
     </a>
 
     <nav class="main-nav" id="mainNav" aria-label="Main navigation">
