@@ -1,0 +1,31 @@
+# --- Agent / tooling artefacts (not part of the website) ---
+.omo/
+.codegraph
+*.log
+
+# --- Node (audit tooling lives outside the web root, but just in case) ---
+node_modules/
+package-lock.json
+
+# --- OS / editor cruft ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+*.swp
+*~
+.vscode/
+.idea/
+
+# --- Local environment / secrets ---
+.env
+.env.*
+*.pem
+*.key
+config.local.php
+
+# --- Build / temp ---
+*.tmp
+*.bak
+*.orig
