@@ -90,6 +90,7 @@ $u = function ($p) use ($rootPath) { return $rootPath . $p; };
                 <a href="<?php echo $u('surgery-for/functional-neurology/crps.php'); ?>" class="mega-link">Complex Regional Pain Syndrome</a>
               </div>
             </div>
+            <a href="<?php echo $u('surgery-for/index.php'); ?>" class="mega-footer-link">View all conditions &amp; procedures &rarr;</a>
           </div>
         </li>
 

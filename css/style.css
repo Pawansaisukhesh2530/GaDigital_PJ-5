@@ -3420,3 +3420,279 @@ img, svg, video, iframe { max-width: 100%; }
   outline-offset: 3px;
   border-radius: 4px;
 }
+/* ==========================================================================
+   MEGA MENU — CONSOLIDATED REDESIGN
+   Appended last so it settles the cascade over the earlier header blocks.
+
+   Fixes measured with the panel open at desktop widths:
+   - it was centred on the "Surgery For" nav item (left:50% + translateX(-50%))
+     with a 920px min-width, so it hung off the LEFT edge of the viewport by
+     184px at 1024, 90px at 1280 and 10px at 1440 - the first column's text
+     was cut in half. It now anchors to the header, so it can never clip.
+   - the 3-col grid force-aligned rows, so the 4-row "Neck Pain" cell was
+     stretched to the 395px height of the 11-row "Tumors" cell, leaving
+     ~265px of dead space. Column flow with break-inside:avoid removes it.
+   - the panel was 767px tall with max-height:none / overflow:visible, so on
+     a normal laptop viewport the lower half was unreachable.
+   - keyboard users could not open it at all: the ArrowDown handler in
+     main.js adds .open, but only the <=992px block acted on that class.
+   ========================================================================== */
+
+/* Desktop only: hand the containing block to the (sticky, so positioned)
+   header, which spans the full width. */
+/* Desktop nav must fit on one line. At 993-1199px the full set of 8 items
+   plus the logo and the CTA needs ~1190px, so the links were wrapping
+   mid-item: the header grew to 89px and the parent link became a fragmented
+   inline box, which broke both the layout and the hover bridge below. */
+@media (min-width: 993px) {
+  .nav-menu { flex-wrap: nowrap; }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+}
+@media (min-width: 993px) and (max-width: 1199px) {
+  .header-cta { display: none; }
+  .nav-link { padding: 0.5rem 0.6rem; font-size: 0.83rem; }
+  .nav-menu { gap: 0.1rem; }
+}
+
+@media (min-width: 993px) {
+
+  .nav-dropdown { position: static; }
+
+  /* The link keeps its own containing block for the hover bridge below */
+  .nav-dropdown > .nav-link-parent { position: relative; }
+
+  /* Invisible bridge across the header's bottom padding. Without it the
+     pointer drops :hover on the way down and the panel closes. */
+  .nav-dropdown > .nav-link-parent::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 22px;
+  }
+
+  .mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) translateY(6px);
+    width: min(1160px, calc(100vw - 2rem));
+    min-width: 0;
+    max-width: none;
+    padding: 1.5rem 1.75rem 1.25rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 16px 40px rgba(16, 18, 24, 0.12);
+    /* never run off the bottom of a short viewport */
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* Brand hairline, same blue-into-pink pairing as the footer */
+  .mega-menu::before {
+    content: '';
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 3px;
+    margin: -1.5rem -1.75rem 1.5rem;
+    border-radius: 0;
+    background: linear-gradient(90deg, var(--color-primary-bright) 0%, var(--color-primary-mid) 45%, var(--color-accent) 100%);
+  }
+
+  /* Open on hover, on keyboard focus, and on the scripted .open class */
+  .nav-dropdown:hover .mega-menu,
+  .nav-dropdown:focus-within .mega-menu,
+  .nav-dropdown.open .mega-menu {
+    display: block;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  /* Escape sets this so the panel shuts even while the parent link holds focus */
+  .nav-dropdown[data-mega-dismissed] .mega-menu { display: none; }
+
+  /* Column flow instead of a row-aligned grid: no stretched cells, no voids */
+  .mega-menu-grid {
+    display: block;
+    column-count: 4;
+    column-gap: 1.75rem;
+    column-rule: 1px solid var(--color-border);
+  }
+  @media (max-width: 1239px) {
+    .mega-menu-grid { column-count: 3; }
+  }
+
+  .mega-col {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 1.35rem;
+  }
+  .mega-col:last-child { margin-bottom: 0; }
+
+  /* Group heading: blue label, hairline, short pink bar for brand continuity */
+  .mega-menu .mega-heading {
+    position: relative;
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-primary-dark);
+    padding: 0 0 0.5rem;
+    margin: 0 0 0.4rem;
+    border-bottom: 1px solid var(--color-border);
+    line-height: 1.4;
+  }
+  .mega-menu .mega-heading::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 22px;
+    height: 2px;
+    background: var(--color-accent);
+  }
+  .mega-menu a.mega-heading:hover,
+  .mega-menu a.mega-heading:focus-visible { color: var(--color-primary); }
+  .mega-menu .mega-heading-spaced { margin-top: 1.1rem; }
+
+  /* Links: comfortable rows, quiet hover */
+  .mega-menu .mega-link {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0.25rem 0.6rem;
+    margin-left: -0.6rem;
+    font-size: 0.855rem;
+    line-height: 1.4;
+    color: var(--color-text);
+    border-radius: 6px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+  .mega-menu .mega-link:hover,
+  .mega-menu .mega-link:focus-visible {
+    color: var(--color-primary-dark);
+    background: var(--color-primary-light);
+  }
+
+  .mega-menu .mega-link-sub {
+    padding-left: 1.5rem;
+    font-size: 0.82rem;
+    color: var(--color-text-secondary);
+  }
+  .mega-menu .mega-link-sub::before {
+    left: 0.55rem;
+    top: 50%;
+    width: 7px;
+  }
+
+  /* Panel footer: route to the Surgery For overview */
+  .mega-footer-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin: 1.1rem -1.75rem -1.25rem;
+    padding: 0 1.75rem;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+    border-radius: 0 0 11px 11px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+  .mega-footer-link:hover,
+  .mega-footer-link:focus-visible { color: var(--color-primary-dark); background: var(--color-primary-light); }
+
+  /* Slim scrollbar for the short-viewport case */
+  .mega-menu { scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
+  .mega-menu::-webkit-scrollbar { width: 8px; }
+  .mega-menu::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+}
+
+/* Mobile accordion */
+@media (max-width: 992px) {
+  /* The unscoped 3-column grid rule earlier in this file was winning over the
+     mobile 1-column rule, so the accordion rendered as three 87px columns. */
+  .mega-menu-grid {
+    display: block;
+    column-count: 1;
+    grid-template-columns: none;
+  }
+  .mega-col + .mega-col { margin-top: 0.4rem; }
+  .mega-menu .mega-heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-primary-dark);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .mega-menu .mega-link { font-size: 0.9rem; padding-left: 0.75rem; }
+  .mega-menu .mega-link-sub { padding-left: 1.75rem; }
+
+  /* the footer link reads as one more row */
+  .mega-footer-link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 1rem;
+    margin-top: 0.35rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+}
+
+/* ==========================================================================
+   CAROUSEL DOTS — smaller
+   The visual dot shrinks to 7px; the transparent border keeps the pointer
+   target at 24px (WCAG 2.5.8).
+   ========================================================================== */
+.banner-dots { gap: 0.1rem; }
+.banner-dot {
+  width: 6px;
+  height: 6px;
+  border-width: 9px;              /* 6 + 9*2 = 24px hit area, the WCAG minimum */
+  border-radius: var(--radius-full);
+  background-clip: content-box;
+}
+/* The earlier is-active rule used the `background` shorthand, which resets
+   background-clip to border-box - the active dot painted white across its
+   whole 24px hit area instead of the small pill. Restated explicitly here. */
+.banner-dot.is-active {
+  width: 14px;
+  border-radius: 3px;
+  background-clip: content-box;
+  background-color: #fff;
+}
+
+.procedures-dots { gap: 0.1rem; }
+.procedures-dot {
+  width: 6px;
+  height: 6px;
+  border-width: 9px;
+  border-radius: var(--radius-full);
+  background-clip: content-box;
+}
+.procedures-dot.active {
+  width: 14px;
+  border-radius: 3px;
+  background-clip: content-box;
+  background-color: var(--color-primary);
+}
+
+@media (max-width: 640px) {
+  .banner-dot { border-width: 9px; }
+}

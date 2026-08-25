@@ -239,6 +239,7 @@
       parent.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowDown') {
           e.preventDefault();
+          dropdown.removeAttribute('data-mega-dismissed');
           dropdown.classList.add('open');
           var first = dropdown.querySelector('.mega-menu a');
           if (first) first.focus();
@@ -246,11 +247,24 @@
       });
     }
 
+    /* On desktop the panel also opens via :focus-within, so removing .open is
+       not enough to honour Escape. The dismissed flag forces it shut while
+       focus stays on the parent link, and clears once the user moves away. */
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
-        dropdown.classList.remove('open');
-        megaToggle.setAttribute('aria-expanded', 'false');
+      if (e.key !== 'Escape') return;
+      dropdown.classList.remove('open');
+      megaToggle.setAttribute('aria-expanded', 'false');
+      if (dropdown.contains(document.activeElement)) {
+        dropdown.setAttribute('data-mega-dismissed', '');
+        if (parent) parent.focus();
       }
+    });
+
+    dropdown.addEventListener('mouseleave', function () {
+      dropdown.removeAttribute('data-mega-dismissed');
+    });
+    dropdown.addEventListener('focusout', function (e) {
+      if (!dropdown.contains(e.relatedTarget)) dropdown.removeAttribute('data-mega-dismissed');
     });
   }
 
