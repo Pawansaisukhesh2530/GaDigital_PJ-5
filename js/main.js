@@ -10,6 +10,7 @@
     initProceduresCarousel();
     initMobileNav();
     initMegaMenuAccordion();
+    initMegaGroups();
     initConsultationModal();
     initFaqAccordion();
     initTabs();
@@ -266,6 +267,79 @@
     dropdown.addEventListener('focusout', function (e) {
       if (!dropdown.contains(e.relatedTarget)) dropdown.removeAttribute('data-mega-dismissed');
     });
+  }
+
+  /* ------------------------------------------------- Mega menu groups (mobile)
+     On a phone the flat submenu ran to ~2000px, pushing Patient Handouts,
+     Blog, Media and Contact Us far below the fold. Each group now collapses,
+     so opening "Surgery For" shows seven headers instead of 44 links.
+     Desktop is untouched: the groups are always expanded there.            */
+  function initMegaGroups() {
+
+    var cols = Array.prototype.slice.call(document.querySelectorAll('.mega-col'));
+    if (!cols.length) return;
+
+    var mobile = window.matchMedia('(max-width: 992px)');
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    var groups = cols.map(function (col) {
+      return {
+        col: col,
+        btn: col.querySelector('.mega-group-toggle'),
+        panel: col.querySelector('.mega-group-links')
+      };
+    }).filter(function (g) { return g.btn && g.panel; });
+
+    function setHeight(g, open) {
+      if (!mobile.matches) { g.panel.style.maxHeight = ''; return; }
+      if (open) {
+        g.panel.style.maxHeight = reduceMotion.matches ? 'none' : g.panel.scrollHeight + 'px';
+      } else {
+        g.panel.style.maxHeight = '0px';
+      }
+    }
+
+    function toggle(g, open) {
+      g.col.classList.toggle('is-open', open);
+      g.btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      g.btn.setAttribute('aria-label', (open ? 'Hide ' : 'Show ') + groupName(g) + ' links');
+      setHeight(g, open);
+    }
+
+    function groupName(g) {
+      var h = g.col.querySelector('.mega-heading');
+      return h ? h.textContent.trim() : 'submenu';
+    }
+
+    groups.forEach(function (g) {
+      g.btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var willOpen = !g.col.classList.contains('is-open');
+        // accordion: only one group open at a time keeps the list short
+        groups.forEach(function (other) { if (other !== g) toggle(other, false); });
+        toggle(g, willOpen);
+      });
+    });
+
+    /* Collapse everything whenever we cross into mobile, and clear the inline
+       heights when we cross back to desktop so the panel renders in full. */
+    function sync() {
+      groups.forEach(function (g) {
+        if (mobile.matches) {
+          toggle(g, g.col.classList.contains('is-open'));
+        } else {
+          g.col.classList.remove('is-open');
+          g.btn.setAttribute('aria-expanded', 'false');
+          g.panel.style.maxHeight = '';
+        }
+      });
+    }
+
+    if (mobile.addEventListener) { mobile.addEventListener('change', sync); }
+    else if (mobile.addListener) { mobile.addListener(sync); }
+    window.addEventListener('resize', sync);
+    sync();
   }
 
   /* ------------------------------------------------------ Consultation modal */

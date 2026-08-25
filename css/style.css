@@ -3489,12 +3489,21 @@ img, svg, video, iframe { max-width: 100%; }
     background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-top: none;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 16px 40px rgba(16, 18, 24, 0.12);
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 24px 48px -12px rgba(16, 18, 24, 0.18), 0 2px 6px rgba(16, 18, 24, 0.05);
     /* never run off the bottom of a short viewport */
     max-height: calc(100vh - 96px);
     overflow-y: auto;
     overscroll-behavior: contain;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-dropdown:hover .mega-menu,
+    .nav-dropdown:focus-within .mega-menu,
+    .nav-dropdown.open .mega-menu { animation: megaIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+  }
+  @keyframes megaIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
 
   /* Brand hairline, same blue-into-pink pairing as the footer */
@@ -3524,46 +3533,61 @@ img, svg, video, iframe { max-width: 100%; }
   .mega-menu-grid {
     display: block;
     column-count: 4;
-    column-gap: 1.75rem;
-    column-rule: 1px solid var(--color-border);
+    column-gap: 1.25rem;
   }
   @media (max-width: 1239px) {
     .mega-menu-grid { column-count: 3; }
   }
 
+  /* Each group is a quiet card so the panel reads as grouped, not as a wall */
   .mega-col {
     break-inside: avoid;
     page-break-inside: avoid;
-    margin-bottom: 1.35rem;
+    margin-bottom: 0.5rem;
+    padding: 0.7rem 0.8rem 0.55rem;
+    border-radius: 12px;
+    transition: background-color 0.18s ease;
   }
-  .mega-col:last-child { margin-bottom: 0; }
+  .mega-col:hover { background: #F7FBFE; }
 
-  /* Group heading: blue label, hairline, short pink bar for brand continuity */
+  /* The chevron only exists for the mobile accordion */
+  .mega-menu .mega-group-toggle { display: none; }
+  .mega-menu .mega-group-links { display: block; }
+
+  .mega-menu .mega-group-head {
+    display: flex;
+    align-items: center;
+    padding-bottom: 0.45rem;
+    margin-bottom: 0.35rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Group heading: pink dot marker + blue uppercase label */
   .mega-menu .mega-heading {
-    position: relative;
-    display: block;
-    font-size: 0.72rem;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 24px;          /* the label is only 15px tall on its own */
+    font-size: 0.71rem;
     font-weight: 700;
     letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--color-primary-dark);
-    padding: 0 0 0.5rem;
-    margin: 0 0 0.4rem;
-    border-bottom: 1px solid var(--color-border);
-    line-height: 1.4;
+    line-height: 1.35;
+    padding: 0;
+    margin: 0;
+    border: none;
   }
-  .mega-menu .mega-heading::after {
+  .mega-menu .mega-heading::before {
     content: '';
-    position: absolute;
-    left: 0;
-    bottom: -1px;
-    width: 22px;
-    height: 2px;
+    flex: 0 0 auto;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
     background: var(--color-accent);
   }
   .mega-menu a.mega-heading:hover,
   .mega-menu a.mega-heading:focus-visible { color: var(--color-primary); }
-  .mega-menu .mega-heading-spaced { margin-top: 1.1rem; }
 
   /* Links: comfortable rows, quiet hover */
   .mega-menu .mega-link {
@@ -3620,8 +3644,14 @@ img, svg, video, iframe { max-width: 100%; }
   .mega-menu::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
 }
 
-/* Mobile accordion */
+/* ==========================================================================
+   MEGA MENU — MOBILE (nested accordion)
+   Flat, the submenu measured ~2074px tall and pushed Patient Handouts, Blog,
+   Media, International Patients and Contact Us far below the fold. Each group
+   now collapses, so opening "Surgery For" adds seven 46px rows instead.
+   ========================================================================== */
 @media (max-width: 992px) {
+
   /* The unscoped 3-column grid rule earlier in this file was winning over the
      mobile 1-column rule, so the accordion rendered as three 87px columns. */
   .mega-menu-grid {
@@ -3629,30 +3659,132 @@ img, svg, video, iframe { max-width: 100%; }
     column-count: 1;
     grid-template-columns: none;
   }
-  .mega-col + .mega-col { margin-top: 0.4rem; }
-  .mega-menu .mega-heading {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--color-primary-dark);
+
+  .mega-menu {
+    padding: 0.35rem 0 0.5rem;
+    background: var(--color-bg-alt);
+    border-radius: 10px;
+    margin-top: 0.3rem;
+  }
+
+  .mega-col {
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    background: none;
     border-bottom: 1px solid var(--color-border);
   }
-  .mega-menu .mega-link { font-size: 0.9rem; padding-left: 0.75rem; }
-  .mega-menu .mega-link-sub { padding-left: 1.75rem; }
+  .mega-col:last-child { border-bottom: none; }
+
+  /* Header row: category link on the left, expander on the right */
+  .mega-menu .mega-group-head {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+  }
+  .mega-menu .mega-heading {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 46px;
+    padding: 0 0.5rem 0 0.9rem;
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--color-heading);
+    line-height: 1.35;
+    border: none;
+  }
+  .mega-menu .mega-heading::before {
+    content: '';
+    flex: 0 0 auto;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+  .mega-menu .mega-heading::after { content: none; }
+
+  /* Expander button, sized for thumbs */
+  .mega-menu .mega-group-toggle {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    min-height: 46px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-left: 1px solid var(--color-border);
+    color: var(--color-primary);
+    cursor: pointer;
+  }
+  .mega-group-chevron {
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.22s ease;
+  }
+  .mega-col.is-open .mega-group-toggle { color: var(--color-primary-dark); background: var(--color-primary-light); }
+  .mega-col.is-open .mega-group-chevron { transform: translateY(2px) rotate(225deg); }
+
+  /* Collapsed by default; JS sets max-height from scrollHeight to animate */
+  .mega-menu .mega-group-links {
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.26s ease;
+    background: var(--color-bg);
+  }
+  .mega-col.is-open > .mega-group-links { border-top: 1px solid var(--color-border); }
+
+  .mega-menu .mega-link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.3rem 0.9rem 0.3rem 1.6rem;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: var(--color-text);
+    border-radius: 0;
+  }
+  .mega-menu .mega-link:active { background: var(--color-primary-light); }
+  .mega-menu .mega-link-sub { padding-left: 2.5rem; font-size: 0.85rem; color: var(--color-text-secondary); }
+  .mega-menu .mega-link-sub::before { left: 1.6rem; width: 8px; }
 
   /* the footer link reads as one more row */
   .mega-footer-link {
     display: flex;
     align-items: center;
-    min-height: 44px;
-    padding: 0 1rem;
+    min-height: 46px;
+    padding: 0 0.9rem;
     margin-top: 0.35rem;
     border-top: 1px solid var(--color-border);
     font-size: 0.86rem;
     font-weight: 700;
     color: var(--color-primary);
   }
+
+  /* Top-level "Surgery For" expander gets the same chevron treatment */
+  .mega-toggle-icon {
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.22s ease;
+  }
+  .mega-toggle[aria-expanded="true"] { transform: none; background: var(--color-primary-light); color: var(--color-primary-dark); }
+  .mega-toggle[aria-expanded="true"] .mega-toggle-icon { transform: translateY(2px) rotate(225deg); }
 }
 
 /* ==========================================================================
